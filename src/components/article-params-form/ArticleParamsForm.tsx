@@ -18,11 +18,38 @@ import {
 	fontColors,
 	fontFamilyOptions,
 	fontSizeOptions,
+	OptionType,
 } from 'src/constants/articleProps';
 import { Separator } from 'src/ui/separator';
 
 export const ArticleParamsForm = () => {
 	const [isOpen, setOpen] = useState(true);
+	const [fontSelect, setFontSelect] = useState(fontFamilyOptions[0]);
+	const [fontSize, setFontSize] = useState(
+		fontSizeOptions[fontColors.length > 1 ? 1 : 0]
+	);
+	const [fontColor, setFontColor] = useState(fontColors[fontColors.length - 1]);
+	const [backgroundColor, setbackgroundColor] = useState(
+		backgroundColors[backgroundColors.length > 3 ? 3 : 0]
+	);
+	const [contentWidthArrState, setcontentWidthArr] = useState(
+		contentWidthArr[contentWidthArr.length > 1 ? 1 : 0]
+	);
+	const onChangefontSelectProps = (selected: OptionType) => {
+		setFontSelect(selected);
+	};
+	const onChangefontSizeProps = (selected: OptionType) => {
+		setFontSize(selected);
+	};
+	const onChangefontColorProps = (selected: OptionType) => {
+		setFontColor(selected);
+	};
+	const onChangebackgroundColorProps = (selected: OptionType) => {
+		setbackgroundColor(selected);
+	};
+	const onChangecontentWidthArrProps = (selected: OptionType) => {
+		setcontentWidthArr(selected);
+	};
 
 	const h2props: TextProps = {
 		as: 'h2',
@@ -32,34 +59,39 @@ export const ArticleParamsForm = () => {
 	};
 
 	const fontSelectProps: SelectProps = {
-		selected: fontFamilyOptions[0],
+		selected: fontSelect,
 		options: fontFamilyOptions,
 		title: 'шрифт',
+		onChange: onChangefontSelectProps,
 	};
 
 	const fontSizeRadioGroup: RadioGroupProps = {
 		name: '',
 		options: fontSizeOptions,
-		selected: fontSizeOptions[1],
+		selected: fontSize,
 		title: 'размер шрифта',
+		onChange: onChangefontSizeProps,
 	};
 
 	const fontColorSelectProps: SelectProps = {
-		selected: fontColors[fontColors.length - 1],
+		selected: fontColor,
 		options: fontColors,
 		title: 'цвет шрифта',
+		onChange: onChangefontColorProps,
 	};
 
 	const backgroundColorSelectProps: SelectProps = {
-		selected: backgroundColors[backgroundColors.length > 3 ? 3 : 0],
+		selected: backgroundColor,
 		options: backgroundColors,
 		title: 'цвет фона',
+		onChange: onChangebackgroundColorProps,
 	};
 
 	const contentWidthArrSelectProps: SelectProps = {
-		selected: contentWidthArr[contentWidthArr.length > 1 ? 1 : 0],
+		selected: contentWidthArrState,
 		options: contentWidthArr,
 		title: 'цвет фона',
+		onChange: onChangecontentWidthArrProps,
 	};
 
 	return (
