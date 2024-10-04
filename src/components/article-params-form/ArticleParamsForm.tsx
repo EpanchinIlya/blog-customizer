@@ -8,8 +8,8 @@ import { SelectProps } from 'src/ui/select/Select';
 
 import { RadioGroup } from 'src/ui/radio-group';
 import { RadioGroupProps } from 'src/ui/radio-group/RadioGroup';
-import { useState } from 'react';
-
+import { FormEvent, useRef, useState } from 'react';
+import { useOutsideClickClose } from './useOutsideClickClose';
 import clsx from 'clsx';
 import styles from './ArticleParamsForm.module.scss';
 import {
@@ -22,19 +22,35 @@ import {
 } from 'src/constants/articleProps';
 import { Separator } from 'src/ui/separator';
 
-export const ArticleParamsForm = () => {
-	const [isOpen, setOpen] = useState(true);
-	const [fontSelect, setFontSelect] = useState(fontFamilyOptions[0]);
-	const [fontSize, setFontSize] = useState(
-		fontSizeOptions[fontColors.length > 1 ? 1 : 0]
+type formParams = {
+	fontFamilyOption: OptionType;
+	fontColor: OptionType;
+	backgroundColor: OptionType;
+	contentWidth: OptionType;
+	fontSizeOption: OptionType;
+};
+
+type ArticleParamsFormProps = {
+	defArticleState: formParams;
+	onSubmit: (selected: formParams) => void;
+};
+
+export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
+	const { defArticleState, onSubmit } = props;
+	const rootRef = useRef<HTMLDivElement>(null);
+	const [isOpen, setOpen] = useState(false);
+	const [fontSelect, setFontSelect] = useState(
+		defArticleState.fontFamilyOption
 	);
-	const [fontColor, setFontColor] = useState(fontColors[fontColors.length - 1]);
+	const [fontSize, setFontSize] = useState(defArticleState.fontSizeOption);
+	const [fontColor, setFontColor] = useState(defArticleState.fontColor);
 	const [backgroundColor, setbackgroundColor] = useState(
-		backgroundColors[backgroundColors.length > 3 ? 3 : 0]
+		defArticleState.backgroundColor
 	);
 	const [contentWidthArrState, setcontentWidthArr] = useState(
-		contentWidthArr[contentWidthArr.length > 1 ? 1 : 0]
+		defArticleState.contentWidth
 	);
+
 	const onChangefontSelectProps = (selected: OptionType) => {
 		setFontSelect(selected);
 	};
@@ -94,40 +110,73 @@ export const ArticleParamsForm = () => {
 		onChange: onChangecontentWidthArrProps,
 	};
 
+	const formParam = {
+		fontFamilyOption: fontSelect,
+		fontColor: fontColor,
+		backgroundColor: backgroundColor,
+		contentWidth: contentWidthArrState,
+		fontSizeOption: fontSize,
+	};
+
+	useOutsideClickClose({
+		isOpen,
+		rootRef,
+		onChange: setOpen,
+	});
+
+	const formSubmitHandler = (e: FormEvent) => {
+		e.preventDefault();
+		onSubmit(formParam);
+	};
+
+	const formResetHandler = () => {
+		setFontSelect(defArticleState.fontFamilyOption);
+		setFontSize(defArticleState.fontSizeOption);
+		setFontColor(defArticleState.fontColor);
+		setbackgroundColor(defArticleState.backgroundColor);
+		setcontentWidthArr(defArticleState.contentWidth);
+
+		onSubmit({
+			fontFamilyOption: defArticleState.fontFamilyOption,
+			fontColor: defArticleState.fontColor,
+			backgroundColor: defArticleState.backgroundColor,
+			contentWidth: defArticleState.contentWidth,
+			fontSizeOption: defArticleState.fontSizeOption,
+		});
+	};
 	return (
 		<>
-			<ArrowButton
-				isOpen={isOpen}
-				onClick={() => {
-					isOpen ? setOpen(false) : setOpen(true);
-				}}
-			/>
-			<aside
-				className={clsx(styles.container, {
-					[styles.container_open]: isOpen === true,
-				})}>
-				<form className={styles.form}>
-					{Text(h2props)}
-					{Select(fontSelectProps)}
-					{RadioGroup(fontSizeRadioGroup)}
-					{Select(fontColorSelectProps)}
-					{Separator()}
-					{Select(backgroundColorSelectProps)}
-					{Select(contentWidthArrSelectProps)}
-					<div className={styles.bottomContainer}>
-						<Button title='Сбросить' htmlType='reset' type='clear' />
-						<Button title='Применить' htmlType='submit' type='apply' />
-					</div>
-				</form>
-			</aside>
+			<div ref={rootRef}>
+				<ArrowButton
+					isOpen={isOpen}
+					onClick={() => {
+						isOpen ? setOpen(false) : setOpen(true);
+					}}
+				/>
+				<aside
+					className={clsx(styles.container, {
+						[styles.container_open]: isOpen === true,
+					})}>
+					<form className={styles.form} onSubmit={formSubmitHandler}>
+						{Text(h2props)}
+						{Select(fontSelectProps)}
+						{RadioGroup(fontSizeRadioGroup)}
+						{Select(fontColorSelectProps)}
+						{Separator()}
+						{Select(backgroundColorSelectProps)}
+						{Select(contentWidthArrSelectProps)}
+						<div className={styles.bottomContainer}>
+							<Button
+								title='Сбросить'
+								htmlType='reset'
+								type='clear'
+								onClick={formResetHandler}
+							/>
+							<Button title='Применить' htmlType='submit' type='apply' />
+						</div>
+					</form>
+				</aside>
+			</div>
 		</>
 	);
 };
-
-// коменты
-
-// ,styles.container_open
-
-{
-	/* <aside className={clsx(styles.container,styles.container_open)}></aside> */
-}
