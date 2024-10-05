@@ -31,40 +31,44 @@ type formParams = {
 };
 
 type ArticleParamsFormProps = {
-	defArticleState: formParams;
+	defaultArticleState: formParams;
 	onSubmit: (selected: formParams) => void;
 };
 
 export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
-	const { defArticleState, onSubmit } = props;
+	const { defaultArticleState, onSubmit } = props;
 	const rootRef = useRef<HTMLDivElement>(null);
-	const [isOpen, setOpen] = useState(false);
-	const [fontSelect, setFontSelect] = useState(
-		defArticleState.fontFamilyOption
+	const [isMenuOpenState, setIsMenuOpen] = useState(false);
+	const [fontSelectState, setFontSelectState] = useState(
+		defaultArticleState.fontFamilyOption
 	);
-	const [fontSize, setFontSize] = useState(defArticleState.fontSizeOption);
-	const [fontColor, setFontColor] = useState(defArticleState.fontColor);
-	const [backgroundColor, setbackgroundColor] = useState(
-		defArticleState.backgroundColor
+	const [fontSizeState, setFontSizeState] = useState(
+		defaultArticleState.fontSizeOption
 	);
-	const [contentWidthArrState, setcontentWidthArr] = useState(
-		defArticleState.contentWidth
+	const [fontColorState, setFontColorState] = useState(
+		defaultArticleState.fontColor
+	);
+	const [backgroundColorState, setbackgroundColorState] = useState(
+		defaultArticleState.backgroundColor
+	);
+	const [contentWidthArrState, setcontentWidthArrState] = useState(
+		defaultArticleState.contentWidth
 	);
 
 	const onChangefontSelectProps = (selected: OptionType) => {
-		setFontSelect(selected);
+		setFontSelectState(selected);
 	};
 	const onChangefontSizeProps = (selected: OptionType) => {
-		setFontSize(selected);
+		setFontSizeState(selected);
 	};
 	const onChangefontColorProps = (selected: OptionType) => {
-		setFontColor(selected);
+		setFontColorState(selected);
 	};
 	const onChangebackgroundColorProps = (selected: OptionType) => {
-		setbackgroundColor(selected);
+		setbackgroundColorState(selected);
 	};
 	const onChangecontentWidthArrProps = (selected: OptionType) => {
-		setcontentWidthArr(selected);
+		setcontentWidthArrState(selected);
 	};
 
 	const h2props: TextProps = {
@@ -75,7 +79,7 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 	};
 
 	const fontSelectProps: SelectProps = {
-		selected: fontSelect,
+		selected: fontSelectState,
 		options: fontFamilyOptions,
 		title: 'шрифт',
 		onChange: onChangefontSelectProps,
@@ -84,20 +88,20 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 	const fontSizeRadioGroup: RadioGroupProps = {
 		name: '',
 		options: fontSizeOptions,
-		selected: fontSize,
+		selected: fontSizeState,
 		title: 'размер шрифта',
 		onChange: onChangefontSizeProps,
 	};
 
 	const fontColorSelectProps: SelectProps = {
-		selected: fontColor,
+		selected: fontColorState,
 		options: fontColors,
 		title: 'цвет шрифта',
 		onChange: onChangefontColorProps,
 	};
 
 	const backgroundColorSelectProps: SelectProps = {
-		selected: backgroundColor,
+		selected: backgroundColorState,
 		options: backgroundColors,
 		title: 'цвет фона',
 		onChange: onChangebackgroundColorProps,
@@ -106,58 +110,58 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 	const contentWidthArrSelectProps: SelectProps = {
 		selected: contentWidthArrState,
 		options: contentWidthArr,
-		title: 'цвет фона',
+		title: 'ширина контента',
 		onChange: onChangecontentWidthArrProps,
 	};
 
 	const formParam = {
-		fontFamilyOption: fontSelect,
-		fontColor: fontColor,
-		backgroundColor: backgroundColor,
+		fontFamilyOption: fontSelectState,
+		fontColor: fontColorState,
+		backgroundColor: backgroundColorState,
 		contentWidth: contentWidthArrState,
-		fontSizeOption: fontSize,
+		fontSizeOption: fontSizeState,
 	};
 
 	useOutsideClickClose({
-		isOpen,
-		rootRef,
-		onChange: setOpen,
+		isOpen: isMenuOpenState,
+		rootRef: rootRef,
+		onChange: setIsMenuOpen,
 	});
 
-	const formSubmitHandler = (e: FormEvent) => {
+	const submitFormHandler = (e: FormEvent) => {
 		e.preventDefault();
 		onSubmit(formParam);
 	};
 
-	const formResetHandler = () => {
-		setFontSelect(defArticleState.fontFamilyOption);
-		setFontSize(defArticleState.fontSizeOption);
-		setFontColor(defArticleState.fontColor);
-		setbackgroundColor(defArticleState.backgroundColor);
-		setcontentWidthArr(defArticleState.contentWidth);
+	const resetFormHandler = () => {
+		setFontSelectState(defaultArticleState.fontFamilyOption);
+		setFontSizeState(defaultArticleState.fontSizeOption);
+		setFontColorState(defaultArticleState.fontColor);
+		setbackgroundColorState(defaultArticleState.backgroundColor);
+		setcontentWidthArrState(defaultArticleState.contentWidth);
 
 		onSubmit({
-			fontFamilyOption: defArticleState.fontFamilyOption,
-			fontColor: defArticleState.fontColor,
-			backgroundColor: defArticleState.backgroundColor,
-			contentWidth: defArticleState.contentWidth,
-			fontSizeOption: defArticleState.fontSizeOption,
+			fontFamilyOption: defaultArticleState.fontFamilyOption,
+			fontColor: defaultArticleState.fontColor,
+			backgroundColor: defaultArticleState.backgroundColor,
+			contentWidth: defaultArticleState.contentWidth,
+			fontSizeOption: defaultArticleState.fontSizeOption,
 		});
 	};
 	return (
 		<>
 			<div ref={rootRef}>
 				<ArrowButton
-					isOpen={isOpen}
+					isOpen={isMenuOpenState}
 					onClick={() => {
-						isOpen ? setOpen(false) : setOpen(true);
+						isMenuOpenState ? setIsMenuOpen(false) : setIsMenuOpen(true);
 					}}
 				/>
 				<aside
 					className={clsx(styles.container, {
-						[styles.container_open]: isOpen === true,
+						[styles.container_open]: isMenuOpenState === true,
 					})}>
-					<form className={styles.form} onSubmit={formSubmitHandler}>
+					<form className={styles.form} onSubmit={submitFormHandler}>
 						{Text(h2props)}
 						{Select(fontSelectProps)}
 						{RadioGroup(fontSizeRadioGroup)}
@@ -170,7 +174,7 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 								title='Сбросить'
 								htmlType='reset'
 								type='clear'
-								onClick={formResetHandler}
+								onClick={resetFormHandler}
 							/>
 							<Button title='Применить' htmlType='submit' type='apply' />
 						</div>
